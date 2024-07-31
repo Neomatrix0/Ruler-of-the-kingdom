@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "SADwIe94klk=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\dev1\\Documents\\Ruler-of-the-kingdom\\Ruler-of-the-kingdom\\Ruler-of-the-kingdom.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\dev1\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

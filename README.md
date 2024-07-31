@@ -91,10 +91,17 @@ Se il giocatore dovesse conquistare tutti i regni vincerà la partita.
 
 - [ ] creazione di tabelle per descrivere vincite e dati 
 
+# QUINTA VERSIONE 
+
+- [ ] Implementare MapAscii
+
+- [ ] installare telnet mapscii.me
 
 
 
+```mermaid
 
 
 
+```
 
