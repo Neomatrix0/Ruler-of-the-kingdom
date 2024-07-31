@@ -1,4 +1,5 @@
 ﻿using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 
 class Program
@@ -6,6 +7,7 @@ class Program
 
     // create folder data where the datas of kingdom will be inserted
     static string directoryPath = @"data/";
+    static bool kingdomCreated = false;
     static void Main(string[] args)
     {
 
@@ -14,7 +16,7 @@ class Program
             Directory.CreateDirectory(directoryPath);
         }
 
-        int budget = 1000000;
+        double budget = 1000000;
         int choice;
 
         do
@@ -25,7 +27,7 @@ class Program
             Console.WriteLine("1. Create your own kingdom");
             Console.WriteLine("2. View all kingdoms");
             Console.WriteLine("3. Exit");
-            Console.WriteLine("4. Fight with enemy");
+            Console.WriteLine("4. Fight with enemy\n");
 
             choice = Convert.ToInt32(Console.ReadLine());
 
@@ -33,43 +35,14 @@ class Program
             {
 
                 case 1:
+                if(!kingdomCreated){
 
-                    Console.Write("Please insert here the name of your Kingdom: ");
+                    CreateYourOwnKingdom(budget);
 
-                    string? inputName = Console.ReadLine();
-                    //         Console.Write("Please insert the form of government:");
-                    //        string inputGovernment = Console.ReadLine(); 
-
-                    Console.Write("Please insert here the name of the regions of your kingdom splitted by coma: ");
-
-                    string? inputRegions = Console.ReadLine();
-                    string[] region = inputRegions.Split(',');
-
-                    if (region.Length != 3)
-                    {
-                        throw new FormatException("Input must include only 3 names,each one splitted by coma");
-                    };
-
-                    // creation of the object kingdom with properties
-
-                    var kingdom = new
-                    {
-                        Name = inputName,
-                        Regions = region,   // Convert.ToString(region[3]),
-                        Budget = budget,
-                        HappinessPopulation = 70,
-                        TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")
-                    };
-
-                    // serialize and format json file 
-
-                    createEnemyKingdom("Atlantis", new string[] { "Red", "Wald", "oceania" }, 800000, 80);
-
-                    string jsonString = JsonConvert.SerializeObject(kingdom, Formatting.Indented);
-
-                    string filePath = Path.Combine(directoryPath, $"{kingdom.Name}_{kingdom.TimeStamp}.json");
-
-                    File.WriteAllText(filePath, jsonString);
+           
+                }else{
+                    Console.WriteLine("Your kingdom has been already created.You can't create another one until you win or lose the match");
+                }
 
 
                     break;
@@ -100,7 +73,7 @@ class Program
 
             if (choice != 3)
             {
-                Console.WriteLine("\nPress a button to go on");
+                Console.WriteLine("\nPress a button to continue");
                 Console.ReadKey();
 
             }
@@ -121,6 +94,10 @@ class Program
                 TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")
 
             };
+
+            string jsonString = JsonConvert.SerializeObject(kingdom,Formatting.Indented);
+            string filePath = Path.Combine(directoryPath, $"{kingdom.Name}_{kingdom.TimeStamp}.json");
+            File.WriteAllText(filePath,jsonString);
         }
 
 
@@ -136,12 +113,14 @@ class Program
             {
 
                 var kingdom = ReadJson(file);
-                Console.WriteLine($"{kingdom.Name},{kingdom.Regions},{kingdom.Budget},{kingdom.HappinessPopulation}");
+                Console.WriteLine($"Kingdom name:{kingdom.Name}\nKingdom regions:{kingdom.Regions}\nKingdom budget:{kingdom.Budget}\nPopulation happiness:{kingdom.HappinessPopulation}\n");
 
         }
 
      //   createEnemyKingdom("Atlantis",new string[] { "Woodland region", "Star region", "Mars region" }, 800000, 80);
 
+        }else{
+                Console.WriteLine("Kingdom not found\n");
         }
         }
 
@@ -152,6 +131,51 @@ class Program
             return JsonConvert.DeserializeObject<dynamic>(jsonRead);
 
         }
+
+    // method to create your own kingdom
+    // wrong correct the part to handle if reign already created
+
+    static void CreateYourOwnKingdom(double budget){
+                 Console.Write("Please insert here the name of your Kingdom: ");
+
+                    string? inputName = Console.ReadLine();
+                    //         Console.Write("Please insert the form of government:");
+                    //        string inputGovernment = Console.ReadLine(); 
+
+                 
+
+                    Console.Write("Please insert here the name of the regions of your kingdom splitted by coma: ");
+
+                    string? inputRegions = Console.ReadLine();
+                    string[] region = inputRegions.Split(',');
+
+                    if (region.Length != 3)
+                    {
+                        throw new FormatException("Input must include only 3 names,each one splitted by coma");
+                    };
+
+                    // creation of the object kingdom with properties
+
+                    var kingdom = new
+                    {
+                        Name = inputName,
+                        Regions = region,   // Convert.ToString(region[3]),
+                        Budget = budget,
+                        HappinessPopulation = 70,
+                        TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")
+                    };
+
+                    // serialize and format json file 
+
+                    createEnemyKingdom("Atlantis", new string[] { "Red", "Wald", "oceania" }, 800000, 80);
+
+                    string jsonString = JsonConvert.SerializeObject(kingdom, Formatting.Indented);
+                       string filePath = Path.Combine(directoryPath, $"{kingdom.Name}_{kingdom.TimeStamp}.json");
+                    
+
+                    File.WriteAllText(filePath, jsonString);
+
+    }
 
 
     

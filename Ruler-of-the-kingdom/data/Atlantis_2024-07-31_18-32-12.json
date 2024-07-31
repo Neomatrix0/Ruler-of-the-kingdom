@@ -1,0 +1,11 @@
+{
+  "Name": "Atlantis",
+  "Regions": [
+    "Red",
+    "Wald",
+    "oceania"
+  ],
+  "Budget": 800000,
+  "HappinessPopulation": 80,
+  "TimeStamp": "2024-07-31_18-32-12"
+}

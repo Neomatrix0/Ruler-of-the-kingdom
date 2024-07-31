@@ -55,19 +55,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\dev1\\.nuget\\packages\\": {}
+    "C:\\Users\\danim\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\dev1\\Documents\\Ruler-of-the-kingdom\\Ruler-of-the-kingdom\\Ruler-of-the-kingdom.csproj",
+      "projectUniqueName": "d:\\Ruler-of-the-kingdom\\Ruler-of-the-kingdom\\Ruler-of-the-kingdom.csproj",
       "projectName": "Ruler-of-the-kingdom",
-      "projectPath": "C:\\Users\\dev1\\Documents\\Ruler-of-the-kingdom\\Ruler-of-the-kingdom\\Ruler-of-the-kingdom.csproj",
-      "packagesPath": "C:\\Users\\dev1\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\dev1\\Documents\\Ruler-of-the-kingdom\\Ruler-of-the-kingdom\\obj\\",
+      "projectPath": "d:\\Ruler-of-the-kingdom\\Ruler-of-the-kingdom\\Ruler-of-the-kingdom.csproj",
+      "packagesPath": "C:\\Users\\danim\\.nuget\\packages\\",
+      "outputPath": "d:\\Ruler-of-the-kingdom\\Ruler-of-the-kingdom\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\dev1\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\danim\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
