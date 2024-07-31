@@ -124,12 +124,28 @@ class Program
         }
 
 
+    // method to view all kingdoms stats
+
         static void ViewAllKingdoms(){
-            ReadJson();
+             var files = Directory.GetFiles(directoryPath, "*.json"); 
+              if (files.Length > 0)
+        {
+            Console.WriteLine("Complete list of all kingdoms:\n");
+            //ReadJson();
+             foreach (var file in files)
+            {
+
+                var kingdom = ReadJson(file);
+                Console.WriteLine($"{kingdom.Name},{kingdom.Regions},{kingdom.Budget},{kingdom.HappinessPopulation}");
 
         }
 
+     //   createEnemyKingdom("Atlantis",new string[] { "Woodland region", "Star region", "Mars region" }, 800000, 80);
 
+        }
+        }
+
+// method to read and deserialize json file
         static dynamic ReadJson(string filePath){
 
             string jsonRead = File.ReadAllText(filePath);

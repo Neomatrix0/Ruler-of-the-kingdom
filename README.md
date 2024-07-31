@@ -39,6 +39,8 @@ Se il giocatore dovesse conquistare tutti i regni vincerà la partita.
 # PRIMA VERSIONE SEMPLIFICATA
 
 - [ ] Creazione di un menu con le opzioni di scelta
+    - [ ] inizio Creazione regno ->
+    - [ ] fine
 
 - [ ] Opzione gioca: chiede di creare il proprio regno con le caratteristiche previste.Verrà creato un file json con le caratteristiche del regno messe dall' utente
 
@@ -46,7 +48,7 @@ Se il giocatore dovesse conquistare tutti i regni vincerà la partita.
 
 - [ ] Opzione esci dal gioco
 
-- [ ] Creazione di un regno di default da sfidare 
+- [ ] Creazione di un regno di default da sfidare implementare subito una funzione per creare anche i regni futuri usando i parametri
 
 - [ ] Lancio di 2 dadi ciascuno.Ogni 2 vittorie si acquista un regno
 
