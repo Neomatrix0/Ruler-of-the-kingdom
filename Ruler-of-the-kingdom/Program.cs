@@ -38,6 +38,7 @@ class Program
                 if(!kingdomCreated){
 
                     CreateYourOwnKingdom(budget);
+                    kingdomCreated = true;
 
            
                 }else{
@@ -82,23 +83,6 @@ class Program
         }
 
 
-    // function to create a default enemy kingdom 
-    static void createEnemyKingdom(dynamic Name, dynamic[] Regions, dynamic Budget, dynamic HappinessPopulation)
-        {
-            var kingdom = new
-            {
-                Name,
-                Regions,
-                Budget,
-                HappinessPopulation,
-                TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")
-
-            };
-
-            string jsonString = JsonConvert.SerializeObject(kingdom,Formatting.Indented);
-            string filePath = Path.Combine(directoryPath, $"{kingdom.Name}_{kingdom.TimeStamp}.json");
-            File.WriteAllText(filePath,jsonString);
-        }
 
 
     // method to view all kingdoms stats
@@ -132,17 +116,21 @@ class Program
 
         }
 
-    // method to create your own kingdom
-    // wrong correct the part to handle if reign already created
+    // method to create your own kingdom and a default enemy to play 
+    
 
     static void CreateYourOwnKingdom(double budget){
+                if (File.Exists(directoryPath))
+                
+        {
+            Console.WriteLine($"Kingdom  has already been created.");
+            return;
+        }else{
                  Console.Write("Please insert here the name of your Kingdom: ");
 
                     string? inputName = Console.ReadLine();
                     //         Console.Write("Please insert the form of government:");
                     //        string inputGovernment = Console.ReadLine(); 
-
-                 
 
                     Console.Write("Please insert here the name of the regions of your kingdom splitted by coma: ");
 
@@ -167,16 +155,38 @@ class Program
 
                     // serialize and format json file 
 
-                    createEnemyKingdom("Atlantis", new string[] { "Red", "Wald", "oceania" }, 800000, 80);
+                     WriteJson(kingdom);
+                     Console.WriteLine($"Kingdom {kingdom.Name} data has been saved successfully!");
 
-                    string jsonString = JsonConvert.SerializeObject(kingdom, Formatting.Indented);
-                       string filePath = Path.Combine(directoryPath, $"{kingdom.Name}_{kingdom.TimeStamp}.json");
-                    
-
-                    File.WriteAllText(filePath, jsonString);
+                     // call function to create enemy kingdom
+                     createEnemyKingdom("Atlantis", new string[] { "Red", "Wald", "oceania" }, 800000, 80);
+              
 
     }
+    }
+
+        // function to create a default enemy kingdom 
+    static void createEnemyKingdom(dynamic Name, dynamic[] Regions, dynamic Budget, dynamic HappinessPopulation)
+        {
+            var kingdom = new
+            {
+                Name,
+                Regions,
+                Budget,
+                HappinessPopulation,
+                TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")
+
+            };
+
+                 WriteJson(kingdom);
+        }
 
 
+    static void WriteJson(dynamic kingdom){
+                string jsonString = JsonConvert.SerializeObject(kingdom, Formatting.Indented);
+                string filePath = Path.Combine(directoryPath, $"{kingdom.Name}_{kingdom.TimeStamp}.json");      
+                File.WriteAllText(filePath, jsonString);
+
+    }
     
 }
