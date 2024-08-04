@@ -27,7 +27,9 @@ class Program
             Console.WriteLine("1. Create your own kingdom");
             Console.WriteLine("2. View all kingdoms");
             Console.WriteLine("3. Exit");
-            Console.WriteLine("4. Fight with enemy\n");
+            Console.WriteLine("4. Fight with enemy");
+            Console.WriteLine("5. Increase taxes");
+            Console.WriteLine("6. Reduce taxes\n");
 
             choice = Convert.ToInt32(Console.ReadLine());
 
@@ -60,6 +62,18 @@ class Program
                         Console.WriteLine($"Updated Budget After War: {budget}");
                         Console.WriteLine($"Updated Happiness Population After War: {happinessPopulation}");
                     }
+                    break;
+
+                    case 5:
+
+                    IncreaseTaxes(ref budget,ref happinessPopulation);
+
+                    break;
+
+                     case 6:
+
+                    ReduceTaxes(ref budget,ref happinessPopulation);
+
                     break;
 
                 default:
@@ -174,6 +188,30 @@ class Program
     {
         string jsonRead = File.ReadAllText(filePath);
         return JsonConvert.DeserializeObject<dynamic>(jsonRead);
+    }
+
+    static void IncreaseTaxes(ref double budget,ref double happinessPopulation){
+
+        Console.WriteLine("Decide the % amount of taxes to increase but the rate of population happiness will decrease proportionally");
+
+        int inputIncreaseTax = Convert.ToInt32(Console.ReadLine());
+
+        budget *= 1+inputIncreaseTax/100.0;
+       happinessPopulation *= 1- inputIncreaseTax/100.0;
+       Console.WriteLine($"Now your budget is {budget} but the happiness of population is lower to {happinessPopulation}");
+
+    }
+
+      static void ReduceTaxes(ref double budget,ref double happinessPopulation){
+
+        Console.WriteLine("Decide the % amount of taxes to decrease  the rate of population happiness will increase but the budget will decrease proportionally");
+
+        int inputIncreaseTax = Convert.ToInt32(Console.ReadLine());
+
+        budget *= 1-inputIncreaseTax/100.0;
+       happinessPopulation *= 1+ inputIncreaseTax/100.0;
+       Console.WriteLine($"Now your budget is {budget} and the happiness of population is higher {happinessPopulation}");
+
     }
 
     static void createEnemyKingdom(dynamic Name, dynamic[] Regions, dynamic Budget, dynamic HappinessPopulation)
