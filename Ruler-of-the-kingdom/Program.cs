@@ -8,6 +8,7 @@ class Program
     static string directoryPath = @"data/";
     static bool kingdomCreated = false;
     static double happinessPopulation = 70; // Initial HappinessPopulation
+     static string kingdomFilePath = "";
 
     static void Main(string[] args)
     {
@@ -52,7 +53,8 @@ class Program
                     break;
 
                 case 3:
-                    Console.WriteLine("The game will be closed. Please wait...");
+                    Console.WriteLine("The game will be closed and the data deleted. Please wait...");
+                    DeleteAllJsonFiles(directoryPath);
                     break;
 
                 case 4:
@@ -67,6 +69,7 @@ class Program
                     case 5:
 
                     IncreaseTaxes(ref budget,ref happinessPopulation);
+                    UpdateJsonValues(kingdomFilePath, budget, happinessPopulation);
 
                     break;
 
@@ -102,13 +105,16 @@ class Program
     {
         Console.Write("Please insert here the name of your Kingdom: ");
         string? inputName = Console.ReadLine();
-        string filePath = Path.Combine(directoryPath, $"{inputName}.json");
+         kingdomFilePath = Path.Combine(directoryPath, $"{inputName}.json");
 
-        if (File.Exists(filePath))
+        if (File.Exists(kingdomFilePath))
         {
             Console.WriteLine($"Kingdom {inputName} has already been created.");
             return;
         }
+     
+
+      
 
         Console.Write("Please insert here the name of the regions of your kingdom split by comma: ");
         string? inputRegions = Console.ReadLine();
@@ -128,7 +134,7 @@ class Program
             TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")
         };
 
-        WriteJson(kingdom);
+        WriteJson(kingdom,kingdomFilePath);
         Console.WriteLine($"Kingdom {kingdom.Name} data has been saved successfully!");
         createEnemyKingdom("Atlantis", new string[] { "Mirage region", "Wald region", "Oceania region" }, 700000, 80);
         createEnemyKingdom("Magonia", new string[] { "Star region", "Galaxy region", "Alternative dimension" }, 1000000, 80);
@@ -170,6 +176,7 @@ class Program
             budget *= 1.15;  // Increase budget by 15%
             happinessPopulation += 10; // Increase happiness population by 10
             Console.WriteLine("Congratulations, you won! War costs will be repaid, and you will earn 15% more budget and increase happiness population by 5.");
+            
         }
         else
         {
@@ -177,12 +184,13 @@ class Program
             happinessPopulation -= 10; // Decrease happiness population by 10
             Console.WriteLine("The enemy has won. You lost your reign and 10 happiness population. Game over.");
         }
+        UpdateJsonValues(kingdomFilePath,budget,happinessPopulation);
     }
 
-    static void WriteJson(dynamic kingdom)
+    static void WriteJson(dynamic kingdom,string filePath)
     {
         string jsonString = JsonConvert.SerializeObject(kingdom, Formatting.Indented);
-        string filePath = Path.Combine(directoryPath, $"{kingdom.Name}_{kingdom.TimeStamp}.json");
+        //string filePath = Path.Combine(directoryPath, $"{kingdom.Name}_{kingdom.TimeStamp}.json");
         File.WriteAllText(filePath, jsonString);
     }
 
@@ -206,6 +214,7 @@ class Program
         budget *= 1+inputIncreaseTax/100.0;
        happinessPopulation *= 1- inputIncreaseTax/100.0;
        Console.WriteLine($"Now your budget is {budget} but the happiness of population is lower to {happinessPopulation}");
+       UpdateJsonValues(kingdomFilePath, budget, happinessPopulation);
 
     }
 
@@ -218,9 +227,26 @@ class Program
         budget *= 1-inputIncreaseTax/100.0;
        happinessPopulation *= 1+ inputIncreaseTax/100.0;
        Console.WriteLine($"Now your budget is {budget} and the happiness of population is higher {happinessPopulation}");
+       UpdateJsonValues(kingdomFilePath, budget, happinessPopulation);
 
     }
 
+    static void  UpdateJsonValues(string filePath, double budget,  double happinessPopulation){
+        var kingdom = ReadJson(filePath);
+        kingdom.Budget = budget;
+        kingdom.HappinessPopulation = happinessPopulation;
+        WriteJson(kingdom,filePath);
+
+
+    }
+
+    static void DeleteAllJsonFiles(string directoryPath){
+        var files = Directory.GetFiles(directoryPath,"*.json");
+        foreach(var file in files){
+            File.Delete(file);
+        }
+
+    }
     static void createEnemyKingdom(dynamic Name, dynamic[] Regions, dynamic Budget, dynamic HappinessPopulation)
     {
         var kingdom = new
@@ -231,7 +257,8 @@ class Program
             HappinessPopulation,
             TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")
         };
+        string filePath = Path.Combine(directoryPath, $"{kingdom.Name}_{kingdom.TimeStamp}.json");
 
-        WriteJson(kingdom);
+        WriteJson(kingdom,filePath);
     }
 }
