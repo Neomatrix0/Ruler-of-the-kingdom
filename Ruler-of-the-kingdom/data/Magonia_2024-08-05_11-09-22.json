@@ -1,0 +1,11 @@
+{
+  "Name": "Magonia",
+  "Regions": [
+    "Star region",
+    "Galaxy region",
+    "Alternative dimension"
+  ],
+  "Budget": 1000000,
+  "HappinessPopulation": 80,
+  "TimeStamp": "2024-08-05_11-09-22"
+}

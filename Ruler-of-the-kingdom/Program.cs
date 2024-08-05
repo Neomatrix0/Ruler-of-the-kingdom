@@ -36,7 +36,7 @@ class Program
             switch (choice)
             {
                 case 1:
-                    if (!kingdomCreated)
+                    if (!kingdomCreated && !DirectoryContainsJsonFiles(directoryPath))
                     {
                         CreateYourOwnKingdom(ref budget);
                         kingdomCreated = true;
@@ -81,8 +81,8 @@ class Program
                     break;
             }
 
-            Console.WriteLine($"Current Budget: {budget}");
-            Console.WriteLine($"Current Happiness Population: {happinessPopulation}");
+         //   Console.WriteLine($"Current Budget: {budget}");
+          //  Console.WriteLine($"Current Happiness Population: {happinessPopulation}");
             if (choice != 3)
             {
                 Console.WriteLine("\nPress a button to continue.");
@@ -130,7 +130,9 @@ class Program
 
         WriteJson(kingdom);
         Console.WriteLine($"Kingdom {kingdom.Name} data has been saved successfully!");
-        createEnemyKingdom("Atlantis", new string[] { "Red", "Wald", "Oceania" }, 800000, 80);
+        createEnemyKingdom("Atlantis", new string[] { "Mirage region", "Wald region", "Oceania region" }, 700000, 80);
+        createEnemyKingdom("Magonia", new string[] { "Star region", "Galaxy region", "Alternative dimension" }, 1000000, 80);
+        createEnemyKingdom("Dark kingdom", new string[] { "Sorcerer region", "Necro region", "Hell dimension" }, 1400000, 70);
     }
 
     static void ViewAllKingdoms()
@@ -190,6 +192,11 @@ class Program
         return JsonConvert.DeserializeObject<dynamic>(jsonRead);
     }
 
+
+    static bool DirectoryContainsJsonFiles(string directoryPath){
+        return Directory.GetFiles(directoryPath, "*.json").Length >0;
+
+    }
     static void IncreaseTaxes(ref double budget,ref double happinessPopulation){
 
         Console.WriteLine("Decide the % amount of taxes to increase but the rate of population happiness will decrease proportionally");
