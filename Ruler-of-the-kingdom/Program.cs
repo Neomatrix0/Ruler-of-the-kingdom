@@ -194,16 +194,16 @@ class Program
 
         if (sumPlayerRolls > sumPcRolls)
         {
-            budget *= 1.15;  // Increase budget by 15%
+            budget *= 1.20;  // Increase budget by 20%
             happinessPopulation += 10; // Increase happiness population by 10
-            Console.WriteLine("Congratulations, you won! War costs will be repaid, and you will earn 15% more budget and increase happiness population by 5.");
+            Console.WriteLine("Congratulations, you won! War costs will be repaid, and you will earn 15% more budget and increase happiness population by 10.");
 
         }
         else
         {
-            budget = 0;  // Loss all budget
-            happinessPopulation -= 10; // Decrease happiness population by 10
-            Console.WriteLine("The enemy has won. You lost your reign and 10 happiness population.");
+            budget -= 300000;  // Loss  budget
+            happinessPopulation -= 15; // Decrease happiness population by 15
+            Console.WriteLine("The enemy has won. You lost 300000 points  and 15 points of happiness population.");
         }
         UpdateJsonValues(kingdomFilePath, budget, happinessPopulation);
     }
