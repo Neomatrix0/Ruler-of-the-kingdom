@@ -5,10 +5,12 @@ using Newtonsoft.Json;
 class Program
 {
     static Random random = new Random(); // Global random object
-    static string directoryPath = @"data/";
-    static bool kingdomCreated = false;
+    static string directoryPath = @"data/";  //directory for json files
+    static bool kingdomCreated = false; //condition to evaluate if player has created its own kingdom to play
     static double happinessPopulation = 70; // Initial HappinessPopulation
-    static string kingdomFilePath = "";
+    static string kingdomFilePath = "";  // variable used to store the file path where the json data of the player's kingdom is saved
+
+    static string playerKingdomName = ""; // store the name of the player kingdom
 
     static void Main(string[] args)
     {
@@ -62,17 +64,21 @@ class Program
                     if (kingdomCreated)
                     {
                         ChooseTheEnemy(ref budget, ref happinessPopulation);
+
+
+                        if(AllEnemiesDefeated())
+                        {
+                            Console.WriteLine("\nCongratulations you conquered the entire world.You won the game!");
+                            choice = 3; // to exit the game
+                            break;
+                         }
                     }
+
                     else
                     {
                         Console.WriteLine("You must create a kingdom first.");
                     }
-                    /*   if (ConfirmWar())
-                       {
-                           FightWar(ref budget, ref happinessPopulation);
-                           Console.WriteLine($"Updated Budget After War: {budget}");
-                           Console.WriteLine($"Updated Happiness Population After War: {happinessPopulation}");
-                       }*/
+
                     break;
 
                 case 5:
@@ -99,7 +105,7 @@ class Program
                 break;
             }
 
-             if (happinessPopulation < 20)
+            if (happinessPopulation < 20)
             {
                 Coup(ref happinessPopulation, ref budget);
                 UpdateJsonValues(kingdomFilePath, budget, happinessPopulation);
@@ -126,6 +132,7 @@ class Program
     {
         Console.Write("Please insert here the name of your Kingdom: ");
         string? inputName = Console.ReadLine();
+         playerKingdomName = inputName;
         kingdomFilePath = Path.Combine(directoryPath, $"{inputName}.json");
 
         if (File.Exists(kingdomFilePath))
@@ -152,7 +159,8 @@ class Program
             Regions = regions,
             Budget = budget,
             HappinessPopulation = happinessPopulation,
-            TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")
+            TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"),
+            Defeated = false
         };
 
         WriteJson(kingdom, kingdomFilePath);
@@ -191,12 +199,13 @@ class Program
         int pcDiceRoll2 = random.Next(1, 7);
         int sumPcRolls = pcDiceRoll1 + pcDiceRoll2;
         Console.WriteLine($"Enemy dice rolls: {pcDiceRoll1} and {pcDiceRoll2} (Total score: {sumPcRolls})");
-
+        var enemyKingdom = ReadJson(enemyFilePath);
         if (sumPlayerRolls > sumPcRolls)
         {
             budget *= 1.20;  // Increase budget by 20%
             happinessPopulation += 10; // Increase happiness population by 10
             Console.WriteLine("Congratulations, you won! War costs will be repaid, and you will earn 15% more budget and increase happiness population by 10.");
+            enemyKingdom.Defeated = true;
 
         }
         else
@@ -205,6 +214,7 @@ class Program
             happinessPopulation -= 15; // Decrease happiness population by 15
             Console.WriteLine("The enemy has won. You lost 300000 points  and 15 points of happiness population.");
         }
+        WriteJson(enemyKingdom, enemyFilePath);
         UpdateJsonValues(kingdomFilePath, budget, happinessPopulation);
     }
 
@@ -280,42 +290,28 @@ class Program
         Console.WriteLine("Choose the kingdom that you want to fight");
         Console.WriteLine("Digit 1 to choose Atlantis,2 to choose Magonia,3 to choose Dark Kingdom");
         int inputChoice = Convert.ToInt32(Console.ReadLine());
-        string enemyKingdom = "";
 
+        string[] kingdoms = { "Atlantis", "Magonia", "Dark Kingdom" };
 
-        switch (inputChoice)
+        if (inputChoice < 1 || inputChoice > kingdoms.Length)
         {
-            case 1:
-
-                enemyKingdom = "Atlantis";
-
-
-
-                break;
-
-            case 2:
-
-                enemyKingdom = "Magonia";
-
-                break;
-
-            case 3:
-
-                enemyKingdom = "Dark Kingdom";
-
-                break;
-
-            default:
-
-                Console.WriteLine("Invalid choice. Try again");
-
-                return;
+            Console.WriteLine("Invalid choice. Try again.");
+            return;
         }
-
-        string enemyFilePath = SearchJson(enemyKingdom);
+        string enemyKingdom = "";
+        string chosenKingdom = kingdoms[inputChoice - 1];
+        string enemyFilePath = SearchJson(chosenKingdom);
 
         if (enemyFilePath != null)
         {
+            var enemyData = ReadJson(enemyFilePath);
+            if (enemyData.Defeated == true)
+            {
+                Console.WriteLine($"You have already defeated {chosenKingdom}. Choose another enemy.");
+                return;
+            }
+
+
             Console.WriteLine($"You have chosen to fight {enemyKingdom}");
             FightWar(ref budget, ref happinessPopulation, enemyFilePath);
 
@@ -347,33 +343,43 @@ class Program
 
     }
 
-    static void Coup(ref double happinessPopulation,ref double budget){
+    static void Coup(ref double happinessPopulation, ref double budget)
+    {
 
-        if(happinessPopulation < 20){
-        Console.WriteLine("Attention!The kingdom population satisfaction is under 20%!");
-        Console.WriteLine("They are staging a coup so you will lose the kingdom.You have to pay 200000 to stop this riot or you will lose the kingdom and the game(y/n)");
-        string yourAnswer = Console.ReadLine().ToLower().Trim();
+        if (happinessPopulation < 20)
+        {
+            Console.WriteLine("Attention!The kingdom population satisfaction is under 20%!");
+            Console.WriteLine("They are staging a coup so you will lose the kingdom.You have to pay 200000 to stop this riot or you will lose the kingdom and the game(y/n)");
+            string yourAnswer = Console.ReadLine().ToLower().Trim();
 
-        if(yourAnswer == "y"){
-        if( budget > 200000){
+            if (yourAnswer == "y")
+            {
+                if (budget > 200000)
+                {
 
-            budget-= 200000;
-            happinessPopulation += 15;
-            Console.WriteLine("You have successfully stopped the coup. Budget has been decreased by 200000 but happiness of population increased of 15 points.");
+                    budget -= 200000;
+                    happinessPopulation += 15;
+                    Console.WriteLine("You have successfully stopped the coup. Budget has been decreased by 200000 but happiness of population increased of 15 points.");
 
 
-        }else{
-             Console.WriteLine("You do not have enough budget to stop the coup so you will lose the kingdom. Game over.");
-             budget =0;
+                }
+                else
+                {
+                    Console.WriteLine("You do not have enough budget to stop the coup so you will lose the kingdom. Game over.");
+                    budget = 0;
+                }
+            }
+            else if (yourAnswer == "n")
+            {
+                Console.WriteLine("Game over.You lost the kingdom and you will be beheaded");
+                budget = 0;
+            }
+            else
+            {
+                Console.WriteLine("Invalid response.Give the proper answer y or n.");
+            }
+
         }
-        }else if(yourAnswer == "n"){
-            Console.WriteLine("Game over.You lost the kingdom and you will be beheaded");
-             budget = 0;
-        }else{
-            Console.WriteLine("Invalid response.Give the proper answer y or n.");
-        }
-
-    }
     }
     static void createEnemyKingdom(dynamic Name, dynamic[] Regions, dynamic Budget, dynamic HappinessPopulation)
     {
@@ -383,10 +389,23 @@ class Program
             Regions,
             Budget,
             HappinessPopulation,
-            TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")
+            TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"),
+            Defeated = false
         };
         string filePath = Path.Combine(directoryPath, $"{kingdom.Name}_{kingdom.TimeStamp}.json");
 
         WriteJson(kingdom, filePath);
     }
+
+    static bool AllEnemiesDefeated(){
+        var files = Directory.GetFiles(directoryPath,"*.json");
+        foreach(var file in files){
+            var kingdom = ReadJson(file);
+            if(kingdom.Defeated == false && kingdom.Name != playerKingdomName ){
+                return false;
+
+            }
+        }
+        return true; // all enemies are defeated
+    } 
 }
