@@ -58,12 +58,21 @@ class Program
                     break;
 
                 case 4:
-                    if (ConfirmWar())
+
+                 if (kingdomCreated)
+                    {
+                        ChooseTheEnemy(ref budget, ref happinessPopulation);
+                    }
+                    else
+                    {
+                        Console.WriteLine("You must create a kingdom first.");
+                    }
+                 /*   if (ConfirmWar())
                     {
                         FightWar(ref budget, ref happinessPopulation);
                         Console.WriteLine($"Updated Budget After War: {budget}");
                         Console.WriteLine($"Updated Happiness Population After War: {happinessPopulation}");
-                    }
+                    }*/
                     break;
 
                     case 5:
@@ -82,6 +91,11 @@ class Program
                 default:
                     Console.WriteLine("Make the right choice.");
                     break;
+            }
+
+            if(budget ==0){
+                Console.WriteLine("Your budget has reached zero the kingdom declared default hence you will be beheaded. Game over.");
+                break;
             }
 
          //   Console.WriteLine($"Current Budget: {budget}");
@@ -159,7 +173,7 @@ class Program
         }
     }
 
-    static void FightWar(ref double budget, ref double happinessPopulation)
+    static void FightWar(ref double budget, ref double happinessPopulation,string enemyFilePath)
     {
         int playerDiceRoll1 = random.Next(1, 7);
         int playerDiceRoll2 = random.Next(1, 7);
@@ -182,7 +196,7 @@ class Program
         {
             budget = 0;  // Loss all budget
             happinessPopulation -= 10; // Decrease happiness population by 10
-            Console.WriteLine("The enemy has won. You lost your reign and 10 happiness population. Game over.");
+            Console.WriteLine("The enemy has won. You lost your reign and 10 happiness population.");
         }
         UpdateJsonValues(kingdomFilePath,budget,happinessPopulation);
     }
@@ -245,6 +259,72 @@ class Program
         foreach(var file in files){
             File.Delete(file);
         }
+
+    }
+
+    static void ChooseTheEnemy(ref double budget, ref double happinessPopulation){
+        Console.WriteLine("Choose the kingdom that you want to fight");
+        Console.WriteLine("Digit 1 to choose Atlantis,2 to choose Magonia,3 to choose Dark Kingdom");
+        int inputChoice  = Convert.ToInt32(Console.ReadLine());
+        string enemyKingdom = "";
+  
+
+        switch(inputChoice){
+            case 1:
+
+            enemyKingdom = "Atlantis";
+
+
+
+            break;
+
+            case 2:
+
+            enemyKingdom = "Magonia";
+
+            break;
+
+            case 3:
+
+            enemyKingdom = "Dark Kingdom";
+            
+             break;
+
+             default:
+
+             Console.WriteLine("Invalid choice. Try again");
+
+            return;
+        }
+
+        string enemyFilePath = SearchJson(enemyKingdom);
+
+        if(enemyFilePath != null){
+            Console.WriteLine($"You have chosen to fight {enemyKingdom}");
+            FightWar(ref budget,ref happinessPopulation,enemyFilePath);
+
+        }else{
+            Console.WriteLine("Enemy kingdom not found");
+        }
+
+    }
+
+    static string SearchJson(string inputKingdom){
+
+        //string inputKingdom = Console.ReadLine();
+
+         string searchPattern = $"{inputKingdom}_*.json";
+
+           var matchingFiles = Directory.GetFiles(directoryPath, searchPattern);
+
+    // Controlla corrispondenza pattern del file
+    if (matchingFiles.Length == 0)
+    {
+        Console.WriteLine("Kingdom not found");
+        return null;
+    }
+     // Return the first matching file (assuming there is only one)
+        return matchingFiles[0];
 
     }
     static void createEnemyKingdom(dynamic Name, dynamic[] Regions, dynamic Budget, dynamic HappinessPopulation)
