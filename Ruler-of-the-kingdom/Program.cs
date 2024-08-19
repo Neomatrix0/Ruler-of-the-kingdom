@@ -144,19 +144,19 @@ class Program
 
 
 
-        Console.Write("Please insert here the name of the regions of your kingdom split by comma: ");
+      /*  Console.Write("Please insert here the name of the regions of your kingdom split by comma: ");
         string? inputRegions = Console.ReadLine();
         string[] regions = inputRegions.Split(',');
 
         if (regions.Length != 3)
         {
             throw new FormatException("Input must include only 3 names, each one split by comma.");
-        }
+        } */
 
         var kingdom = new
         {
             Name = inputName,
-            Regions = regions,
+           // Regions = regions,
             Budget = budget,
             HappinessPopulation = happinessPopulation,
             TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"),
@@ -165,9 +165,13 @@ class Program
 
         WriteJson(kingdom, kingdomFilePath);
         Console.WriteLine($"Kingdom {kingdom.Name} data has been saved successfully!");
-        createEnemyKingdom("Atlantis", new string[] { "Mirage region", "Wald region", "Oceania region" }, 700000, 80);
-        createEnemyKingdom("Magonia", new string[] { "Star region", "Galaxy region", "Alternative dimension" }, 1000000, 80);
-        createEnemyKingdom("Dark kingdom", new string[] { "Sorcerer region", "Necro region", "Hell dimension" }, 1400000, 70);
+        createEnemyKingdom("Atlantis", 700000, 80);
+        createEnemyKingdom("Magonia",  1000000, 80);
+        createEnemyKingdom("Star Empire ",1200000,90);
+        createEnemyKingdom("Dark Kingdom", 1800000, 90);
+        createEnemyKingdom("Dream Realm",2000000,110);
+
+
     }
 
     static void ViewAllKingdoms()
@@ -179,7 +183,7 @@ class Program
             foreach (var file in files)
             {
                 var kingdom = ReadJson(file);
-                Console.WriteLine($"Kingdom name: {kingdom.Name}, Regions: {string.Join(", ", kingdom.Regions)}, Budget: {kingdom.Budget}, HappinessPopulation: {kingdom.HappinessPopulation}\n");
+                Console.WriteLine($"Kingdom name: {kingdom.Name}, Budget: {kingdom.Budget}, HappinessPopulation: {kingdom.HappinessPopulation}\n");
             }
         }
         else
@@ -190,6 +194,7 @@ class Program
 
     static void FightWar(ref double budget, ref double happinessPopulation, string enemyFilePath)
     {
+        Thread.Sleep(1000);
         int playerDiceRoll1 = random.Next(1, 7);
         int playerDiceRoll2 = random.Next(1, 7);
         int sumPlayerRolls = playerDiceRoll1 + playerDiceRoll2;
@@ -204,7 +209,8 @@ class Program
         {
             budget *= 1.20;  // Increase budget by 20%
             happinessPopulation += 10; // Increase happiness population by 10
-            Console.WriteLine("Congratulations, you won! War costs will be repaid, and you will earn 15% more budget and increase happiness population by 10.");
+            Thread.Sleep(1000);
+            Console.WriteLine("\nCongratulations, you won! War costs will be repaid, and you will earn 15% more budget and increase happiness population by 10.");
             enemyKingdom.Defeated = true;
 
         }
@@ -212,7 +218,8 @@ class Program
         {
             budget -= 300000;  // Loss  budget
             happinessPopulation -= 15; // Decrease happiness population by 15
-            Console.WriteLine("The enemy has won. You lost 300000 points  and 15 points of happiness population.");
+            Thread.Sleep(1000);
+            Console.WriteLine("\nThe enemy has won. You lost 300000 points  and 15 points of happiness population.");
         }
         WriteJson(enemyKingdom, enemyFilePath);
         UpdateJsonValues(kingdomFilePath, budget, happinessPopulation);
@@ -288,10 +295,10 @@ class Program
     static void ChooseTheEnemy(ref double budget, ref double happinessPopulation)
     {
         Console.WriteLine("Choose the kingdom that you want to fight");
-        Console.WriteLine("Digit 1 to choose Atlantis,2 to choose Magonia,3 to choose Dark Kingdom");
+        Console.WriteLine("Digit 1 to choose Atlantis,2 to choose Magonia,3 Star Empire,4 to choose Dark Kingdom,5 Dream Realm");
         int inputChoice = Convert.ToInt32(Console.ReadLine());
 
-        string[] kingdoms = { "Atlantis", "Magonia", "Dark Kingdom" };
+        string[] kingdoms = { "Atlantis", "Magonia","Star Empire", "Dark Kingdom","Dream Realm" };
 
         if (inputChoice < 1 || inputChoice > kingdoms.Length)
         {
@@ -381,12 +388,11 @@ class Program
 
         }
     }
-    static void createEnemyKingdom(dynamic Name, dynamic[] Regions, dynamic Budget, dynamic HappinessPopulation)
+    static void createEnemyKingdom(dynamic Name, dynamic Budget, dynamic HappinessPopulation)
     {
         var kingdom = new
         {
             Name,
-            Regions,
             Budget,
             HappinessPopulation,
             TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"),
