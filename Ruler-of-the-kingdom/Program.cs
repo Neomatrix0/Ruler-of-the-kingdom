@@ -167,7 +167,7 @@ class Program
         Console.WriteLine($"Kingdom {kingdom.Name} data has been saved successfully!");
         createEnemyKingdom("Atlantis", 700000, 80);
         createEnemyKingdom("Magonia",  1000000, 80);
-        createEnemyKingdom("Star Empire ",1200000,90);
+        createEnemyKingdom("Star Empire",1200000,90);
         createEnemyKingdom("Dark Kingdom", 1800000, 90);
         createEnemyKingdom("Dream Realm",2000000,110);
 
@@ -298,23 +298,23 @@ class Program
         Console.WriteLine("Digit 1 to choose Atlantis,2 to choose Magonia,3 Star Empire,4 to choose Dark Kingdom,5 Dream Realm");
         int inputChoice = Convert.ToInt32(Console.ReadLine());
 
-        string[] kingdoms = { "Atlantis", "Magonia","Star Empire", "Dark Kingdom","Dream Realm" };
+        string[] kingdoms = { "Atlantis", "Magonia", "Star Empire", "Dark Kingdom", "Dream Realm" };
 
         if (inputChoice < 1 || inputChoice > kingdoms.Length)
         {
             Console.WriteLine("Invalid choice. Try again.");
             return;
         }
-        string enemyKingdom = "";
-        string chosenKingdom = kingdoms[inputChoice - 1];
-        string enemyFilePath = SearchJson(chosenKingdom);
+        
+        string enemyKingdom = kingdoms[inputChoice - 1];
+        string enemyFilePath = SearchJson(enemyKingdom);
 
         if (enemyFilePath != null)
         {
             var enemyData = ReadJson(enemyFilePath);
             if (enemyData.Defeated == true)
             {
-                Console.WriteLine($"You have already defeated {chosenKingdom}. Choose another enemy.");
+                Console.WriteLine($"You have already defeated {enemyKingdom}. Choose another enemy.");
                 return;
             }
 
