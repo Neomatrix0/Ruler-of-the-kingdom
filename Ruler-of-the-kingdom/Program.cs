@@ -12,6 +12,16 @@ class Program
 
     static string playerKingdomName = ""; // store the name of the player kingdom
 
+    static List<Dictionary<string,dynamic>> playerArmy = new List<Dictionary<string,dynamic>>();
+    static Dictionary<string,dynamic>[] availableUnits = {
+
+        new Dictionary<string,dynamic> {{ "name","Infantry"},{"cost",100},{"strength",10},{"strongAgainst","Archers"}},
+        new Dictionary<string,dynamic> {{"name","Cavalry"},{"cost",200},{"strength",15},{"strongAgainst","Infantry"}},
+        new Dictionary<string,dynamic> {{"name","Archers"},{"cost",150},{"strength",12},{"strongAgainst","Cavalry"}}
+
+
+    };
+
     static void Main(string[] args)
     {
         if (!Directory.Exists(directoryPath))
@@ -195,6 +205,13 @@ class Program
     static void FightWar(ref double budget, ref double happinessPopulation, string enemyFilePath)
     {
         Thread.Sleep(1000);
+
+        var enemyArmy = CreateEnemyArmy(500000,availableUnits); // create enemy army
+
+        int playerStrength = CalculateArmyStrength(playerArmy,enemyArmy);
+
+        int enemyStrength = CalculateArmyStrength(enemyArmy,playerArmy);
+
         int playerDiceRoll1 = random.Next(1, 7);
         int playerDiceRoll2 = random.Next(1, 7);
         int sumPlayerRolls = playerDiceRoll1 + playerDiceRoll2;
@@ -204,8 +221,19 @@ class Program
         int pcDiceRoll2 = random.Next(1, 7);
         int sumPcRolls = pcDiceRoll1 + pcDiceRoll2;
         Console.WriteLine($"Enemy dice rolls: {pcDiceRoll1} and {pcDiceRoll2} (Total score: {sumPcRolls})");
+
+        // add to the dices results the army strength
+
+        playerStrength += sumPlayerRolls;
+        enemyStrength += sumPcRolls;
+
+        Console.WriteLine($"Your total strength (army + dice): {playerStrength}");
+        Console.WriteLine($"Enemy total strength (army + dice): {enemyStrength}");
+
+        // set the winner
+
         var enemyKingdom = ReadJson(enemyFilePath);
-        if (sumPlayerRolls > sumPcRolls)
+        if (playerStrength > enemyStrength)
         {
             budget *= 1.20;  // Increase budget by 20%
             happinessPopulation += 10; // Increase happiness population by 10
@@ -223,6 +251,33 @@ class Program
         }
         WriteJson(enemyKingdom, enemyFilePath);
         UpdateJsonValues(kingdomFilePath, budget, happinessPopulation);
+    }
+
+    static int CalculateArmyStrength(List<Dictionary<string,dynamic>>army,List<Dictionary<string,dynamic>>opposingArmy){
+
+        int totalStrength =0;
+        foreach(var unit in army){
+            int strength = unit["strength"];
+            //verify if this army unit is stronger than the enemy's unit
+            foreach(var opposingUnit in opposingArmy){
+                if(unit["strongAgainst"] == opposingUnit["name"]){
+                    strength +=5;  // strength bonus if unit is stronger against the enemy's unit
+
+
+                }
+            }
+
+            totalStrength += strength;
+
+        }
+
+        return totalStrength;
+
+    }
+
+// to finish
+    static void BuyUnits(){
+        // work in progress ...
     }
 
     static void WriteJson(dynamic kingdom, string filePath)
