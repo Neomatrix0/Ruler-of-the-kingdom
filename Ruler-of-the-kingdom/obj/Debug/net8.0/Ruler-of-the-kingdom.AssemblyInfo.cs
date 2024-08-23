@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Ruler-of-the-kingdom")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3a30fe07e2cd79bdc82262df7624b035646b8b47")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c5435232462ca05226dede47768a17b1ca4ff222")]
 [assembly: System.Reflection.AssemblyProductAttribute("Ruler-of-the-kingdom")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Ruler-of-the-kingdom")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

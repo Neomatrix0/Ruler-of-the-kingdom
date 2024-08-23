@@ -65,7 +65,7 @@ class Program
         {
             Console.WriteLine("\nWelcome to the game Ruler of the Kingdom!");
             Console.WriteLine("You must create a kingdom before performing any other actions.");
-            Console.WriteLine("1. Create your own kingdom");
+            Console.WriteLine("1. Give a name to your kingdom");
             Console.WriteLine("2. Exit");
 
             int initialChoice = Convert.ToInt32(Console.ReadLine());
@@ -94,7 +94,7 @@ class Program
         {
             Console.WriteLine("\nWelcome to the game Ruler of the Kingdom Main Menu!");
             Console.WriteLine("Every path begins with a choice\n");
-            Console.WriteLine("1. Welcome");
+           // Console.WriteLine("1. Welcome");
             Console.WriteLine("2. View all kingdoms");
             Console.WriteLine("3. Buy units army");
             Console.WriteLine("4. Fight with enemy");
@@ -187,8 +187,7 @@ class Program
                 UpdateJsonValues(kingdomFilePath, budget, happinessPopulation);
             }
 
-            //   Console.WriteLine($"Current Budget: {budget}");
-            //  Console.WriteLine($"Current Happiness Population: {happinessPopulation}");
+          
             if (choice != 7)
             {
                 Console.WriteLine("\nPress a button to continue.");
@@ -218,21 +217,9 @@ class Program
         }
 
 
-
-
-      /*  Console.Write("Please insert here the name of the regions of your kingdom split by comma: ");
-        string? inputRegions = Console.ReadLine();
-        string[] regions = inputRegions.Split(',');
-
-        if (regions.Length != 3)
-        {
-            throw new FormatException("Input must include only 3 names, each one split by comma.");
-        } */
-
         var kingdom = new
         {
             Name = inputName,
-           // Regions = regions,
             Budget = budget,
             HappinessPopulation = happinessPopulation,
             TimeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"),
@@ -259,7 +246,17 @@ class Program
             foreach (var file in files)
             {
                 var kingdom = ReadJson(file);
-                Console.WriteLine($"Kingdom name: {kingdom.Name}, Budget: {kingdom.Budget}, HappinessPopulation: {kingdom.HappinessPopulation}\n");
+                bool isDefeated = kingdom.Defeated;
+                Console.WriteLine($"Kingdom name: {kingdom.Name}, Budget: {kingdom.Budget}, HappinessPopulation: {kingdom.HappinessPopulation}, Defeated: {isDefeated}\n");
+
+                // If it's the player's kingdom, show additional details
+
+                if(kingdom.Name == playerKingdomName){
+                    
+                   // Display the player's army details
+                Console.WriteLine("--- Your Army Details ---");
+                DisplayArmyDetails(playerArmy);
+                }
             }
         }
         else
@@ -270,11 +267,7 @@ class Program
 
     static void FightWar(ref double budget, ref double happinessPopulation, string enemyFilePath)
     {
-        if (!kingdomCreated)
-    {
-        Console.WriteLine("You must create a kingdom first before engaging in a war.");
-        return;
-    }
+ 
         Thread.Sleep(1000);
 
         var enemyArmy = CreateEnemyArmy(500000,availableUnits); // create enemy army
@@ -324,6 +317,42 @@ class Program
         UpdateJsonValues(kingdomFilePath, budget, happinessPopulation);
     }
 
+    //view your army
+
+    static void DisplayArmyDetails(List<Dictionary<string, dynamic>> army)
+{
+    if (army.Count > 0)
+    {
+        int totalStrength = 0;
+        Dictionary<string, int> unitCount = new Dictionary<string, int>();
+
+        // Calculate total strength and unit counts
+        foreach (var unit in army)
+        {
+            totalStrength += unit["strength"];
+            if (unitCount.ContainsKey(unit["name"]))
+            {
+                unitCount[unit["name"]]++;
+            }
+            else
+            {
+                unitCount[unit["name"]] = 1;
+            }
+        }
+
+        // Display each unit type and their count
+        foreach (var unitType in unitCount)
+        {
+            Console.WriteLine($"{unitType.Value} x {unitType.Key} (Strength: {availableUnits.First(u => u["name"] == unitType.Key)["strength"]})");
+        }
+        Console.WriteLine($"Total Army Strength: {totalStrength}\n");
+    }
+    else
+    {
+        Console.WriteLine("You have no units in your army.\n");
+    }
+}
+
     static int CalculateArmyStrength(List<Dictionary<string,dynamic>>army,List<Dictionary<string,dynamic>>opposingArmy){
 
         int totalStrength =0;
@@ -348,7 +377,12 @@ class Program
 
 // function to buy units
     static void BuyUnits(ref double budget, List<Dictionary<string,dynamic>> playerArmy, Dictionary<string,dynamic>[]availableUnits){
-       if (!EnsureKingdomCreated()) return;
+     //  if (!EnsureKingdomCreated()) return;
+       bool continueBuying = true;
+
+       while(continueBuying){
+        // Display the current budget
+    Console.WriteLine($"\nYour current budget: {budget}\n");
 
         Console.WriteLine("Choose a unit to buy:");
 
@@ -379,9 +413,22 @@ class Program
             playerArmy.Add(new Dictionary<string,dynamic>(chosenUnit));
             }
             Console.WriteLine($"You have bought {quantity} {chosenUnit["name"]} units. Remaining budget: {budget}");
-         }else{
-            Console.WriteLine("Not enough budget to buy these units.");
-         }
+          // Display the updated army details after purchasing
+        Console.WriteLine("\n--- Your Updated Army Details ---");
+        DisplayArmyDetails(playerArmy);
+    }
+    else
+    {
+        Console.WriteLine("Not enough budget to buy these units.");
+    }
+     // Ask if the player wants to buy more units
+        Console.WriteLine("Do you want to buy more units? (y/n)");
+        string response = Console.ReadLine().Trim().ToLower();
+        if (response != "y")
+        {
+            continueBuying = false;
+        }
+    }
     }
 
     static List<Dictionary<string,dynamic>> CreateEnemyArmy(double enemyBudget,Dictionary<string,dynamic>[]availableUnits ){
