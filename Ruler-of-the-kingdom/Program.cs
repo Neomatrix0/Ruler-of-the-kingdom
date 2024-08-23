@@ -15,10 +15,10 @@ class Program
     static List<Dictionary<string,dynamic>> playerArmy = new List<Dictionary<string,dynamic>>();
     static Dictionary<string,dynamic>[] availableUnits = {
 
-        new Dictionary<string,dynamic> {{ "name","Infantry"},{"cost",100},{"strength",10},{"strongAgainst","Archers"}},
-        new Dictionary<string,dynamic> {{"name","Cavalry"},{"cost",200},{"strength",15},{"strongAgainst","Infantry"}},
-        new Dictionary<string,dynamic> {{"name","Archers"},{"cost",150},{"strength",12},{"strongAgainst","Cavalry"}}
-
+        new Dictionary<string,dynamic> {{ "name","Infantry"},{"cost",1000},{"strength",10},{"strongAgainst","Archers"}},
+        new Dictionary<string,dynamic> {{"name","Cavalry"},{"cost",2000},{"strength",15},{"strongAgainst","Infantry"}},
+        new Dictionary<string,dynamic> {{"name","Archers"},{"cost",1500},{"strength",12},{"strongAgainst","Cavalry"}},
+        new Dictionary<string,dynamic> {{"name","Wizards"},{"cost",3000},{"strength",20},{"strongAgainst","Archers"}}
 
     };
 
@@ -42,8 +42,8 @@ class Program
             Console.WriteLine("3. Buy units army");
             Console.WriteLine("4. Fight with enemy");
             Console.WriteLine("5. Increase taxes");
-            Console.WriteLine("6. Reduce taxes\n");
-            Console.WriteLine("7. Exit");
+            Console.WriteLine("6. Reduce taxes");
+            Console.WriteLine("7. Exit\n");
 
             choice = Convert.ToInt32(Console.ReadLine());
 
@@ -212,6 +212,11 @@ class Program
 
     static void FightWar(ref double budget, ref double happinessPopulation, string enemyFilePath)
     {
+        if (!kingdomCreated)
+    {
+        Console.WriteLine("You must create a kingdom first before engaging in a war.");
+        return;
+    }
         Thread.Sleep(1000);
 
         var enemyArmy = CreateEnemyArmy(500000,availableUnits); // create enemy army
@@ -285,7 +290,7 @@ class Program
 
 // function to buy units
     static void BuyUnits(ref double budget, List<Dictionary<string,dynamic>> playerArmy, Dictionary<string,dynamic>[]availableUnits){
-        
+       if (!EnsureKingdomCreated()) return;
 
         Console.WriteLine("Choose a unit to buy:");
 
@@ -300,12 +305,24 @@ class Program
          }
 
          var chosenUnit = availableUnits[choice-1];
-         if(budget >= chosenUnit["cost"]){
-            budget -= chosenUnit["cost"];
-            playerArmy.Add(chosenUnit);
-            Console.WriteLine($"You have bought {chosenUnit["name"]}. Remaining budget: {budget}");
+
+         Console.Write($"How many {chosenUnit["name"]} units would you like to buy? ");
+
+         int quantity = Convert.ToInt32(Console.ReadLine());
+
+         double totalCost = chosenUnit["cost"]* quantity;
+
+
+         if(budget >= totalCost){
+            budget -= totalCost;
+
+            for(int i=0;i < quantity;i++){
+            //add unity for each bought quantity
+            playerArmy.Add(new Dictionary<string,dynamic>(chosenUnit));
+            }
+            Console.WriteLine($"You have bought {quantity} {chosenUnit["name"]} units. Remaining budget: {budget}");
          }else{
-            Console.WriteLine("Not enough budget to buy this unit.");
+            Console.WriteLine("Not enough budget to buy these units.");
          }
     }
 
@@ -339,6 +356,15 @@ class Program
         return JsonConvert.DeserializeObject<dynamic>(jsonRead);
     }
 
+    static bool EnsureKingdomCreated(){
+        if(!kingdomCreated || string.IsNullOrEmpty(kingdomFilePath)){
+            Console.WriteLine("You must create a kingdom before to perform an action\n");
+            return false;
+        }
+        //if kingdom exists proceed
+        return true;
+    }
+
 
     static bool DirectoryContainsJsonFiles(string directoryPath)
     {
@@ -348,6 +374,7 @@ class Program
     static void IncreaseTaxes(ref double budget, ref double happinessPopulation)
     {
 
+        if (!EnsureKingdomCreated()) return;
         Console.WriteLine("Decide the % amount of taxes to increase but the rate of population happiness will decrease proportionally");
 
         int inputIncreaseTax = Convert.ToInt32(Console.ReadLine());
@@ -361,6 +388,7 @@ class Program
 
     static void ReduceTaxes(ref double budget, ref double happinessPopulation)
     {
+        if (!EnsureKingdomCreated()) return;
 
         Console.WriteLine("Decide the % amount of taxes to decrease  the rate of population happiness will increase but the budget will decrease proportionally");
 
