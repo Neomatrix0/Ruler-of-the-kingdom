@@ -39,10 +39,11 @@ class Program
             Console.WriteLine("Every path begins with a choice\n");
             Console.WriteLine("1. Create your own kingdom");
             Console.WriteLine("2. View all kingdoms");
-            Console.WriteLine("3. Exit");
+            Console.WriteLine("3. Buy units army");
             Console.WriteLine("4. Fight with enemy");
             Console.WriteLine("5. Increase taxes");
             Console.WriteLine("6. Reduce taxes\n");
+            Console.WriteLine("7. Exit");
 
             choice = Convert.ToInt32(Console.ReadLine());
 
@@ -65,8 +66,8 @@ class Program
                     break;
 
                 case 3:
-                    Console.WriteLine("The game will be closed and the data deleted. Please wait...");
-                    DeleteAllJsonFiles(directoryPath);
+                BuyUnits(ref budget,playerArmy,availableUnits);
+                  
                     break;
 
                 case 4:
@@ -104,6 +105,13 @@ class Program
 
                     break;
 
+                case 7:
+                  Console.WriteLine("The game will be closed and the data deleted. Please wait...");
+                    DeleteAllJsonFiles(directoryPath);
+                    break;
+
+
+
                 default:
                     Console.WriteLine("Make the right choice.");
                     break;
@@ -123,12 +131,12 @@ class Program
 
             //   Console.WriteLine($"Current Budget: {budget}");
             //  Console.WriteLine($"Current Happiness Population: {happinessPopulation}");
-            if (choice != 3)
+            if (choice != 7)
             {
                 Console.WriteLine("\nPress a button to continue.");
                 Console.ReadKey();
             }
-        } while (choice != 3);
+        } while (choice != 7);
     }
 
     static bool ConfirmWar()
@@ -275,11 +283,49 @@ class Program
 
     }
 
-// to finish
-    static void BuyUnits(){
-        // work in progress ...
+// function to buy units
+    static void BuyUnits(ref double budget, List<Dictionary<string,dynamic>> playerArmy, Dictionary<string,dynamic>[]availableUnits){
+        
+
+        Console.WriteLine("Choose a unit to buy:");
+
+        for(int i =0;i < availableUnits.Length;i++){
+            Console.WriteLine($"{i+1}. {availableUnits[i]["name"]} (Cost: {availableUnits[i]["cost"]}, Strength: {availableUnits[i]["strength"]})");
+        }
+         int choice = Convert.ToInt32(Console.ReadLine());
+
+         if(choice < 1 || choice > availableUnits.Length){
+            Console.WriteLine("Invalid choice");
+            return;
+         }
+
+         var chosenUnit = availableUnits[choice-1];
+         if(budget >= chosenUnit["cost"]){
+            budget -= chosenUnit["cost"];
+            playerArmy.Add(chosenUnit);
+            Console.WriteLine($"You have bought {chosenUnit["name"]}. Remaining budget: {budget}");
+         }else{
+            Console.WriteLine("Not enough budget to buy this unit.");
+         }
     }
 
+    static List<Dictionary<string,dynamic>> CreateEnemyArmy(double enemyBudget,Dictionary<string,dynamic>[]availableUnits ){
+        List<Dictionary<string,dynamic>> enemyArmy = new List<Dictionary<string,dynamic>>();
+        while(enemyBudget >0){
+            int index = random.Next(availableUnits.Length);
+            var unitToBuy = availableUnits[index];
+
+            if(enemyBudget >= unitToBuy["cost"]){
+                enemyArmy.Add(unitToBuy);
+                enemyBudget -= unitToBuy["cost"];
+
+            }else{
+                break;  // exit from loop if the budget is not enough
+            }
+
+        }
+        return enemyArmy;
+    }
     static void WriteJson(dynamic kingdom, string filePath)
     {
         string jsonString = JsonConvert.SerializeObject(kingdom, Formatting.Indented);
