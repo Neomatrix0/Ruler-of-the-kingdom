@@ -29,15 +29,72 @@ class Program
             Directory.CreateDirectory(directoryPath);
         }
 
+        //added
+
+            // Check if a kingdom JSON file already exists
+        var existingKingdomFiles = Directory.GetFiles(directoryPath, "*.json");
+        if (existingKingdomFiles.Length > 0)
+        {
+            foreach (var file in existingKingdomFiles)
+            {
+                var kingdom = ReadJson(file);
+
+                if (kingdom.Defeated == false && kingdom.Name != "Atlantis" && kingdom.Name != "Magonia" &&
+                    kingdom.Name != "Star Empire" && kingdom.Name != "Dark Kingdom" && kingdom.Name != "Dream Realm")
+                {
+                    // Load the first non-defeated player's kingdom found
+                    kingdomFilePath = file;
+                    playerKingdomName = kingdom.Name;
+                    happinessPopulation = kingdom.HappinessPopulation;
+                    kingdomCreated = true;
+                    Console.WriteLine($"Loaded existing kingdom: {playerKingdomName} with a budget of {kingdom.Budget} and happiness of {happinessPopulation}.");
+                    break;
+                }
+            }
+        }
+//
+
         double budget = 1000000;  // Initial budget
         Console.WriteLine("Initial Budget: " + budget);
+
+        
+  if (!kingdomCreated)
+        {
+         // Loop until the kingdom is created
+        while (!kingdomCreated)
+        {
+            Console.WriteLine("\nWelcome to the game Ruler of the Kingdom!");
+            Console.WriteLine("You must create a kingdom before performing any other actions.");
+            Console.WriteLine("1. Create your own kingdom");
+            Console.WriteLine("2. Exit");
+
+            int initialChoice = Convert.ToInt32(Console.ReadLine());
+
+            switch (initialChoice)
+            {
+                case 1:
+                    CreateYourOwnKingdom(ref budget);
+                    kingdomCreated = true;
+                    break;
+                case 2:
+                    Console.WriteLine("Exiting game. Goodbye!");
+                    return;
+                default:
+                    Console.WriteLine("Invalid choice. Please select 1 to create a kingdom or 2 to exit.");
+                    break;
+            }
+        }
+        }
+
+
+        // kingdom is created now appear the menu
 
         int choice;
         do
         {
             Console.WriteLine("\nWelcome to the game Ruler of the Kingdom Main Menu!");
             Console.WriteLine("Every path begins with a choice\n");
-            Console.WriteLine("1. Create your own kingdom");
+            Console.WriteLine("1. Welcome");
             Console.WriteLine("2. View all kingdoms");
             Console.WriteLine("3. Buy units army");
             Console.WriteLine("4. Fight with enemy");
@@ -50,7 +107,7 @@ class Program
             switch (choice)
             {
                 case 1:
-                    if (!kingdomCreated && !DirectoryContainsJsonFiles(directoryPath))
+                  /*  if (!kingdomCreated && !DirectoryContainsJsonFiles(directoryPath))
                     {
                         CreateYourOwnKingdom(ref budget);
                         kingdomCreated = true;
@@ -58,7 +115,8 @@ class Program
                     else
                     {
                         Console.WriteLine("A kingdom has already been created. You can't create another one until you win or lose the match.");
-                    }
+                    }*/
+                    Console.WriteLine("Welcome to the game!");
                     break;
 
                 case 2:
