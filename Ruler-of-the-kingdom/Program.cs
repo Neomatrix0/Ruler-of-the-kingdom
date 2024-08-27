@@ -12,8 +12,12 @@ class Program
 
     static string playerKingdomName = ""; // store the name of the player kingdom
 
-    static List<Dictionary<string,dynamic>> playerArmy = new List<Dictionary<string,dynamic>>();
-    static Dictionary<string,dynamic>[] availableUnits = {
+    // List to hold the player's army
+
+    static List<Dictionary<string, dynamic>> playerArmy = new List<Dictionary<string, dynamic>>();
+
+    // Available army units for purchase with their respective properties
+    static Dictionary<string, dynamic>[] availableUnits = {
 
         new Dictionary<string,dynamic> {{ "name","Infantry"},{"cost",1000},{"strength",10},{"strongAgainst","Archers"}},
         new Dictionary<string,dynamic> {{"name","Cavalry"},{"cost",2000},{"strength",15},{"strongAgainst","Infantry"}},
@@ -29,15 +33,17 @@ class Program
             Directory.CreateDirectory(directoryPath);
         }
 
-        //added
 
-            // Check if a kingdom JSON file already exists
+        // Check if a kingdom JSON file already exists
+        // Load an existing kingdom if it exists, otherwise start from scratch
         var existingKingdomFiles = Directory.GetFiles(directoryPath, "*.json");
         if (existingKingdomFiles.Length > 0)
         {
             foreach (var file in existingKingdomFiles)
             {
                 var kingdom = ReadJson(file);
+
+                // Skip enemy kingdoms and check if the player's kingdom is already created
 
                 if (kingdom.Defeated == false && kingdom.Name != "Atlantis" && kingdom.Name != "Magonia" &&
                     kingdom.Name != "Star Empire" && kingdom.Name != "Dark Kingdom" && kingdom.Name != "Dream Realm")
@@ -52,38 +58,37 @@ class Program
                 }
             }
         }
-//
 
         double budget = 1000000;  // Initial budget
         Console.WriteLine("Initial Budget: " + budget);
 
-        
-  if (!kingdomCreated)
-        {
-         // Loop until the kingdom is created
-        while (!kingdomCreated)
-        {
-            Console.WriteLine("\nWelcome to the game Ruler of the Kingdom!");
-            Console.WriteLine("You must create a kingdom before performing any other actions.");
-            Console.WriteLine("1. Give a name to your kingdom");
-            Console.WriteLine("2. Exit");
 
-            int initialChoice = Convert.ToInt32(Console.ReadLine());
-
-            switch (initialChoice)
+        if (!kingdomCreated)
+        {
+            // Loop until the kingdom is created
+            while (!kingdomCreated)
             {
-                case 1:
-                    CreateYourOwnKingdom(ref budget);
-                    kingdomCreated = true;
-                    break;
-                case 2:
-                    Console.WriteLine("Exiting game. Goodbye!");
-                    return;
-                default:
-                    Console.WriteLine("Invalid choice. Please select 1 to create a kingdom or 2 to exit.");
-                    break;
+                Console.WriteLine("\nWelcome to the game Ruler of the Kingdom!");
+                Console.WriteLine("You must create a kingdom before performing any other actions.");
+                Console.WriteLine("1. Give a name to your kingdom");
+                Console.WriteLine("2. Exit");
+
+                int initialChoice = Convert.ToInt32(Console.ReadLine());
+
+                switch (initialChoice)
+                {
+                    case 1:
+                        CreateYourOwnKingdom(ref budget);   // Create a new kingdom
+                        kingdomCreated = true;
+                        break;
+                    case 2:
+                        Console.WriteLine("Exiting game. Goodbye!");
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice. Please select 1 to create a kingdom or 2 to exit.");
+                        break;
+                }
             }
-        }
         }
 
 
@@ -94,7 +99,7 @@ class Program
         {
             Console.WriteLine("\nWelcome to the game Ruler of the Kingdom Main Menu!");
             Console.WriteLine("Every path begins with a choice\n");
-           // Console.WriteLine("1. Welcome");
+            // Console.WriteLine("1. Welcome");
             Console.WriteLine("2. View all kingdoms");
             Console.WriteLine("3. Buy units army");
             Console.WriteLine("4. Fight with enemy");
@@ -107,15 +112,15 @@ class Program
             switch (choice)
             {
                 case 1:
-                  /*  if (!kingdomCreated && !DirectoryContainsJsonFiles(directoryPath))
-                    {
-                        CreateYourOwnKingdom(ref budget);
-                        kingdomCreated = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine("A kingdom has already been created. You can't create another one until you win or lose the match.");
-                    }*/
+                    /*  if (!kingdomCreated && !DirectoryContainsJsonFiles(directoryPath))
+                      {
+                          CreateYourOwnKingdom(ref budget);
+                          kingdomCreated = true;
+                      }
+                      else
+                      {
+                          Console.WriteLine("A kingdom has already been created. You can't create another one until you win or lose the match.");
+                      }*/
                     Console.WriteLine("Welcome to the game!");
                     break;
 
@@ -124,8 +129,8 @@ class Program
                     break;
 
                 case 3:
-                BuyUnits(ref budget,playerArmy,availableUnits);
-                  
+                    BuyUnits(ref budget, playerArmy, availableUnits);
+
                     break;
 
                 case 4:
@@ -135,12 +140,12 @@ class Program
                         ChooseTheEnemy(ref budget, ref happinessPopulation);
 
 
-                        if(AllEnemiesDefeated())
+                        if (AllEnemiesDefeated())
                         {
                             Console.WriteLine("\nCongratulations you conquered the entire world.You won the game!");
                             choice = 3; // to exit the game
                             break;
-                         }
+                        }
                     }
 
                     else
@@ -164,7 +169,7 @@ class Program
                     break;
 
                 case 7:
-                  Console.WriteLine("The game will be closed and the data deleted. Please wait...");
+                    Console.WriteLine("The game will be closed and the data deleted. Please wait...");
                     DeleteAllJsonFiles(directoryPath);
                     break;
 
@@ -175,6 +180,8 @@ class Program
                     break;
             }
 
+            // Check for game over conditions
+
             if (budget == 0)
             {
                 Console.WriteLine("Your budget has reached zero the kingdom declared default hence you will be beheaded. Game over.");
@@ -183,19 +190,19 @@ class Program
 
             if (happinessPopulation < 20)
             {
-                Coup(ref happinessPopulation, ref budget);
+                Coup(ref happinessPopulation, ref budget);   // Handle coup if happiness is too low
                 UpdateJsonValues(kingdomFilePath, budget, happinessPopulation);
             }
 
-          
+
             if (choice != 7)
             {
                 Console.WriteLine("\nPress a button to continue.");
                 Console.ReadKey();
             }
-        } while (choice != 7);
+        } while (choice != 7);      // Loop until the player chooses to exit
     }
-
+    // Function to confirm war
     static bool ConfirmWar()
     {
         Console.WriteLine("The war will cost you 15% of your budget. Do you want to proceed? y/n");
@@ -203,11 +210,12 @@ class Program
         return answer == "y";
     }
 
+    // Function to create a new kingdom
     static void CreateYourOwnKingdom(ref double budget)
     {
         Console.Write("Please insert here the name of your Kingdom: ");
         string? inputName = Console.ReadLine();
-         playerKingdomName = inputName;
+        playerKingdomName = inputName;
         kingdomFilePath = Path.Combine(directoryPath, $"{inputName}.json");
 
         if (File.Exists(kingdomFilePath))
@@ -216,7 +224,7 @@ class Program
             return;
         }
 
-
+        // Create a new kingdom object and save it to a JSON file
         var kingdom = new
         {
             Name = inputName,
@@ -228,15 +236,16 @@ class Program
 
         WriteJson(kingdom, kingdomFilePath);
         Console.WriteLine($"Kingdom {kingdom.Name} data has been saved successfully!");
-        createEnemyKingdom("Atlantis", 700000, 80);
-        createEnemyKingdom("Magonia",  1000000, 80);
-        createEnemyKingdom("Star Empire",1200000,90);
-        createEnemyKingdom("Dark Kingdom", 1800000, 90);
-        createEnemyKingdom("Dream Realm",2000000,110);
 
+        // Create predefined enemy kingdoms
+        createEnemyKingdom("Atlantis", 700000, 80);
+        createEnemyKingdom("Magonia", 1000000, 80);
+        createEnemyKingdom("Star Empire", 1200000, 90);
+        createEnemyKingdom("Dark Kingdom", 1800000, 90);
+        createEnemyKingdom("Dream Realm", 2000000, 110);
 
     }
-
+    // Function to view all kingdoms and their details
     static void ViewAllKingdoms()
     {
         var files = Directory.GetFiles(directoryPath, "*.json");
@@ -251,11 +260,12 @@ class Program
 
                 // If it's the player's kingdom, show additional details
 
-                if(kingdom.Name == playerKingdomName){
-                    
-                   // Display the player's army details
-                Console.WriteLine("--- Your Army Details ---");
-                DisplayArmyDetails(playerArmy);
+                if (kingdom.Name == playerKingdomName)
+                {
+
+                    // Display the player's army details
+                    Console.WriteLine("--- Your Army Details ---");
+                    DisplayArmyDetails(playerArmy);
                 }
             }
         }
@@ -264,18 +274,18 @@ class Program
             Console.WriteLine("No kingdoms found.\n");
         }
     }
-
+    // Function to handle a war between the player's kingdom and an enemy kingdom
     static void FightWar(ref double budget, ref double happinessPopulation, string enemyFilePath)
     {
- 
+
         Thread.Sleep(1000);
 
-        var enemyArmy = CreateEnemyArmy(500000,availableUnits); // create enemy army
+        var enemyArmy = CreateEnemyArmy(500000, availableUnits); // create enemy army
 
-        int playerStrength = CalculateArmyStrength(playerArmy,enemyArmy);
+        int playerStrength = CalculateArmyStrength(playerArmy, enemyArmy);
 
-        int enemyStrength = CalculateArmyStrength(enemyArmy,playerArmy);
-
+        int enemyStrength = CalculateArmyStrength(enemyArmy, playerArmy);
+        // Roll the dice for both player and enemy
         int playerDiceRoll1 = random.Next(1, 7);
         int playerDiceRoll2 = random.Next(1, 7);
         int sumPlayerRolls = playerDiceRoll1 + playerDiceRoll2;
@@ -317,51 +327,55 @@ class Program
         UpdateJsonValues(kingdomFilePath, budget, happinessPopulation);
     }
 
-    //view your army
+    // Function to display the player's army details
 
     static void DisplayArmyDetails(List<Dictionary<string, dynamic>> army)
-{
-    if (army.Count > 0)
     {
-        int totalStrength = 0;
-        Dictionary<string, int> unitCount = new Dictionary<string, int>();
+        if (army.Count > 0)
+        {
+            int totalStrength = 0;
+            Dictionary<string, int> unitCount = new Dictionary<string, int>();
 
-        // Calculate total strength and unit counts
+            // Calculate total strength and unit counts
+            foreach (var unit in army)
+            {
+                totalStrength += unit["strength"];
+                if (unitCount.ContainsKey(unit["name"]))
+                {
+                    unitCount[unit["name"]]++;
+                }
+                else
+                {
+                    unitCount[unit["name"]] = 1;
+                }
+            }
+
+            // Display each unit type and their count
+            foreach (var unitType in unitCount)
+            {
+                Console.WriteLine($"{unitType.Value} x {unitType.Key} (Strength: {availableUnits.First(u => u["name"] == unitType.Key)["strength"]})");
+            }
+            Console.WriteLine($"Total Army Strength: {totalStrength}\n");
+        }
+        else
+        {
+            Console.WriteLine("You have no units in your army.\n");
+        }
+    }
+    // Function to calculate the strength of an army
+    static int CalculateArmyStrength(List<Dictionary<string, dynamic>> army, List<Dictionary<string, dynamic>> opposingArmy)
+    {
+
+        int totalStrength = 0;
         foreach (var unit in army)
         {
-            totalStrength += unit["strength"];
-            if (unitCount.ContainsKey(unit["name"]))
-            {
-                unitCount[unit["name"]]++;
-            }
-            else
-            {
-                unitCount[unit["name"]] = 1;
-            }
-        }
-
-        // Display each unit type and their count
-        foreach (var unitType in unitCount)
-        {
-            Console.WriteLine($"{unitType.Value} x {unitType.Key} (Strength: {availableUnits.First(u => u["name"] == unitType.Key)["strength"]})");
-        }
-        Console.WriteLine($"Total Army Strength: {totalStrength}\n");
-    }
-    else
-    {
-        Console.WriteLine("You have no units in your army.\n");
-    }
-}
-
-    static int CalculateArmyStrength(List<Dictionary<string,dynamic>>army,List<Dictionary<string,dynamic>>opposingArmy){
-
-        int totalStrength =0;
-        foreach(var unit in army){
             int strength = unit["strength"];
             //verify if this army unit is stronger than the enemy's unit
-            foreach(var opposingUnit in opposingArmy){
-                if(unit["strongAgainst"] == opposingUnit["name"]){
-                    strength +=5;  // strength bonus if unit is stronger against the enemy's unit
+            foreach (var opposingUnit in opposingArmy)
+            {
+                if (unit["strongAgainst"] == opposingUnit["name"])
+                {
+                    strength += 5;  // strength bonus if unit is stronger against the enemy's unit
 
 
                 }
@@ -375,94 +389,109 @@ class Program
 
     }
 
-// function to buy units
-    static void BuyUnits(ref double budget, List<Dictionary<string,dynamic>> playerArmy, Dictionary<string,dynamic>[]availableUnits){
-     //  if (!EnsureKingdomCreated()) return;
-       bool continueBuying = true;
-
-       while(continueBuying){
-        // Display the current budget
-    Console.WriteLine($"\nYour current budget: {budget}\n");
-
-        Console.WriteLine("Choose a unit to buy:");
-
-        for(int i =0;i < availableUnits.Length;i++){
-            Console.WriteLine($"{i+1}. {availableUnits[i]["name"]} (Cost: {availableUnits[i]["cost"]}, Strength: {availableUnits[i]["strength"]})");
-        }
-         int choice = Convert.ToInt32(Console.ReadLine());
-
-         if(choice < 1 || choice > availableUnits.Length){
-            Console.WriteLine("Invalid choice");
-            return;
-         }
-
-         var chosenUnit = availableUnits[choice-1];
-
-         Console.Write($"How many {chosenUnit["name"]} units would you like to buy? ");
-
-         int quantity = Convert.ToInt32(Console.ReadLine());
-
-         double totalCost = chosenUnit["cost"]* quantity;
-
-
-         if(budget >= totalCost){
-            budget -= totalCost;
-
-            for(int i=0;i < quantity;i++){
-            //add unity for each bought quantity
-            playerArmy.Add(new Dictionary<string,dynamic>(chosenUnit));
-            }
-            Console.WriteLine($"You have bought {quantity} {chosenUnit["name"]} units. Remaining budget: {budget}");
-          // Display the updated army details after purchasing
-        Console.WriteLine("\n--- Your Updated Army Details ---");
-        DisplayArmyDetails(playerArmy);
-    }
-    else
+    // function to buy units
+    static void BuyUnits(ref double budget, List<Dictionary<string, dynamic>> playerArmy, Dictionary<string, dynamic>[] availableUnits)
     {
-        Console.WriteLine("Not enough budget to buy these units.");
-    }
-     // Ask if the player wants to buy more units
-        Console.WriteLine("Do you want to buy more units? (y/n)");
-        string response = Console.ReadLine().Trim().ToLower();
-        if (response != "y")
+        //  if (!EnsureKingdomCreated()) return;
+        bool continueBuying = true;
+
+        while (continueBuying)
         {
-            continueBuying = false;
+            // Display the current budget
+            Console.WriteLine($"\nYour current budget: {budget}\n");
+
+            Console.WriteLine("Choose a unit to buy:");
+
+            for (int i = 0; i < availableUnits.Length; i++)
+            {
+                Console.WriteLine($"{i + 1}. {availableUnits[i]["name"]} (Cost: {availableUnits[i]["cost"]}, Strength: {availableUnits[i]["strength"]})");
+            }
+            int choice = Convert.ToInt32(Console.ReadLine());
+
+            if (choice < 1 || choice > availableUnits.Length)
+            {
+                Console.WriteLine("Invalid choice");
+                return;
+            }
+
+            var chosenUnit = availableUnits[choice - 1];
+
+            Console.Write($"How many {chosenUnit["name"]} units would you like to buy? ");
+
+            int quantity = Convert.ToInt32(Console.ReadLine());
+
+            double totalCost = chosenUnit["cost"] * quantity;
+
+            // Check if the player has enough budget to buy the units
+            if (budget >= totalCost)
+            {
+                budget -= totalCost;
+
+                for (int i = 0; i < quantity; i++)
+                {
+                    //add unity to the army for each quantity purchased
+                    playerArmy.Add(new Dictionary<string, dynamic>(chosenUnit));
+                }
+                Console.WriteLine($"You have bought {quantity} {chosenUnit["name"]} units. Remaining budget: {budget}");
+                // Display the updated army details after purchasing
+                Console.WriteLine("\n--- Your Updated Army Details ---");
+                DisplayArmyDetails(playerArmy);
+            }
+            else
+            {
+                Console.WriteLine("Not enough budget to buy these units.");
+            }
+            // Ask if the player wants to buy more units
+            Console.WriteLine("Do you want to buy more units? (y/n)");
+            string response = Console.ReadLine().Trim().ToLower();
+            if (response != "y")
+            {
+                continueBuying = false;
+            }
         }
     }
-    }
-
-    static List<Dictionary<string,dynamic>> CreateEnemyArmy(double enemyBudget,Dictionary<string,dynamic>[]availableUnits ){
-        List<Dictionary<string,dynamic>> enemyArmy = new List<Dictionary<string,dynamic>>();
-        while(enemyBudget >0){
+    // Function to create an enemy army
+    static List<Dictionary<string, dynamic>> CreateEnemyArmy(double enemyBudget, Dictionary<string, dynamic>[] availableUnits)
+    {
+        List<Dictionary<string, dynamic>> enemyArmy = new List<Dictionary<string, dynamic>>();
+        while (enemyBudget > 0)
+        {
             int index = random.Next(availableUnits.Length);
             var unitToBuy = availableUnits[index];
 
-            if(enemyBudget >= unitToBuy["cost"]){
+            if (enemyBudget >= unitToBuy["cost"])
+            {
                 enemyArmy.Add(unitToBuy);
                 enemyBudget -= unitToBuy["cost"];
 
-            }else{
+            }
+            else
+            {
                 break;  // exit from loop if the budget is not enough
             }
 
         }
         return enemyArmy;
     }
+
+    // Function to write kingdom data to a JSON file
     static void WriteJson(dynamic kingdom, string filePath)
     {
         string jsonString = JsonConvert.SerializeObject(kingdom, Formatting.Indented);
         //string filePath = Path.Combine(directoryPath, $"{kingdom.Name}_{kingdom.TimeStamp}.json");
         File.WriteAllText(filePath, jsonString);
     }
-
+    // Function to read kingdom data from a JSON file
     static dynamic ReadJson(string filePath)
     {
         string jsonRead = File.ReadAllText(filePath);
         return JsonConvert.DeserializeObject<dynamic>(jsonRead);
     }
-
-    static bool EnsureKingdomCreated(){
-        if(!kingdomCreated || string.IsNullOrEmpty(kingdomFilePath)){
+    // Function to ensure that a kingdom has been created before performing any action
+    static bool EnsureKingdomCreated()
+    {
+        if (!kingdomCreated || string.IsNullOrEmpty(kingdomFilePath))
+        {
             Console.WriteLine("You must create a kingdom before to perform an action\n");
             return false;
         }
@@ -470,12 +499,13 @@ class Program
         return true;
     }
 
-
+    // Function to check if the data directory contains any JSON files
     static bool DirectoryContainsJsonFiles(string directoryPath)
     {
         return Directory.GetFiles(directoryPath, "*.json").Length > 0;
 
     }
+    // Function to increase taxes and adjust the budget and happiness accordingly
     static void IncreaseTaxes(ref double budget, ref double happinessPopulation)
     {
 
@@ -491,6 +521,7 @@ class Program
 
     }
 
+    // Function to reduce taxes and adjust the budget and happiness accordingly
     static void ReduceTaxes(ref double budget, ref double happinessPopulation)
     {
         if (!EnsureKingdomCreated()) return;
@@ -505,7 +536,7 @@ class Program
         UpdateJsonValues(kingdomFilePath, budget, happinessPopulation);
 
     }
-
+    // Function to update the kingdom data in the JSON file
     static void UpdateJsonValues(string filePath, double budget, double happinessPopulation)
     {
         var kingdom = ReadJson(filePath);
@@ -516,6 +547,7 @@ class Program
 
     }
 
+    // Function to delete all JSON files in the data directory
     static void DeleteAllJsonFiles(string directoryPath)
     {
         var files = Directory.GetFiles(directoryPath, "*.json");
@@ -525,7 +557,7 @@ class Program
         }
 
     }
-
+    // Function to choose an enemy kingdom to fight
     static void ChooseTheEnemy(ref double budget, ref double happinessPopulation)
     {
         Console.WriteLine("Choose the kingdom that you want to fight");
@@ -539,7 +571,7 @@ class Program
             Console.WriteLine("Invalid choice. Try again.");
             return;
         }
-        
+
         string enemyKingdom = kingdoms[inputChoice - 1];
         string enemyFilePath = SearchJson(enemyKingdom);
 
@@ -563,7 +595,7 @@ class Program
         }
 
     }
-
+    // Function to search for a kingdom's JSON file by name
     static string SearchJson(string inputKingdom)
     {
 
@@ -583,7 +615,7 @@ class Program
         return matchingFiles[0];
 
     }
-
+    // Function to handle a coup if the population's happiness is too low
     static void Coup(ref double happinessPopulation, ref double budget)
     {
 
@@ -622,6 +654,7 @@ class Program
 
         }
     }
+    // Function to create predefined enemy kingdoms
     static void createEnemyKingdom(dynamic Name, dynamic Budget, dynamic HappinessPopulation)
     {
         var kingdom = new
@@ -636,16 +669,19 @@ class Program
 
         WriteJson(kingdom, filePath);
     }
-
-    static bool AllEnemiesDefeated(){
-        var files = Directory.GetFiles(directoryPath,"*.json");
-        foreach(var file in files){
+    // Function to check if all enemy kingdoms have been defeated
+    static bool AllEnemiesDefeated()
+    {
+        var files = Directory.GetFiles(directoryPath, "*.json");
+        foreach (var file in files)
+        {
             var kingdom = ReadJson(file);
-            if(kingdom.Defeated == false && kingdom.Name != playerKingdomName ){
+            if (kingdom.Defeated == false && kingdom.Name != playerKingdomName)
+            {
                 return false;
 
             }
         }
         return true; // all enemies are defeated
-    } 
+    }
 }
